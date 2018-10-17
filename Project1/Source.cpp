@@ -24,7 +24,7 @@ int H, W;
 int Xo, Yo;
 int Xf, Yf;
 int R;
-bool patron;
+bool interruptor;
 void Inicio(void);
 void ConfigureWindow(int newW, int newH);
 void OnResizeWindow(int width, int height);
@@ -59,6 +59,9 @@ void Inicio(void)//iniciacion de variables
 	glMatrixMode(GL_PROJECTION);
 
 } 
+//////////////////////////////////////////////////////////////////////////
+//FUNCIONES BASICAS PARA OPENGL
+//////////////////////////////////////////////////////////////////////////
 void OnMouse(int button, int state, int x, int y)//funcion que captura clics
 {
 	if (button == GLUT_LEFT_BUTTON)
@@ -68,6 +71,36 @@ void OnMouse(int button, int state, int x, int y)//funcion que captura clics
 			Xo = x;
 			Yo = y;
 		}
+	}
+}
+void DrawCursor(int Xc, int Yc)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	switch (draw)
+	{
+	case DElipse:
+		glBegin(GL_QUADS);
+		glVertex2i(Xc - 5, Yc - 5);
+		glVertex2i(Xc - 5, Yc + 5);
+		glVertex2i(Xc + 5, Yc + 5);
+		glVertex2i(Xc + 5, Yc - 5);
+		glEnd();
+		glBegin(GL_QUADS);
+		glVertex2i(Xc - 1, Yc - 1);
+		glVertex2i(Xc - 1, Yc + 1);
+		glVertex2i(Xc + 1, Yc + 1);
+		glVertex2i(Xc + 1, Yc - 1);
+		glEnd();
+		break;
+	case DLine:
+		glBegin(GL_LINES);
+		glVertex2i(Xc - 5, Yc);
+		glVertex2i(Xc + 5, Yc);
+		glVertex2i(Xc, Yc - 5);
+		glVertex2i(Xc, Yc + 5);
+		glEnd();
+		break;
 	}
 }
 void OnKeyboard(unsigned char key, int x, int y)// Se configura el modo de graficación en el teclado
@@ -92,7 +125,7 @@ void OnKeyboard(unsigned char key, int x, int y)// Se configura el modo de grafi
 		break;
 	case 'r':
 	case 'R':
-		patron = !patron;
+		interruptor = !interruptor;
 		break;
 
 	}
@@ -115,6 +148,9 @@ void OnMouseMove(int x, int y)//funcion que captura el movimiento del mouse
 	glutPostRedisplay();
 }
 
+//////////////////////////////////////////////////////////////////////////
+//DIBUJAR LINEAS BASICAS
+//////////////////////////////////////////////////////////////////////////
 void DibujarLineaHorizontal(int Xi, int Xe, int Y)//ahi bien lo dice; dibuja una linea horizontal
 {
 	glBegin(GL_POINTS);
@@ -125,7 +161,9 @@ void DibujarLineaHorizontal(int Xi, int Xe, int Y)//ahi bien lo dice; dibuja una
 	}
 	glEnd();
 }
-
+//////////////////////////////////////////////////////////////////////////
+//SIMETRIAS
+//////////////////////////////////////////////////////////////////////////
 void simetriaCirculo(int xc, int yc, int x, int y)//simetria para dibujar el resto de los octantes
 {
 	glBegin(GL_POINTS);
@@ -148,7 +186,9 @@ void simetriaElipse(int xc, int yc, int x, int y)//simetria para dibujar el rest
 	glVertex2i(-x + xc, -y + yc);
 	glEnd();
 }
-
+//////////////////////////////////////////////////////////////////////////
+//RELLENOS POR SIMETRIA DE LA FIGURA
+//////////////////////////////////////////////////////////////////////////
 void rellenoSimetriaCirculo(int x, int y, int xc, int yc)
 {
 	glBegin(GL_POINTS);
@@ -166,7 +206,9 @@ void rellenoSimetriaElipse(int x, int y, int xc, int yc)
 	DibujarLineaHorizontal(-x + xc,x + xc, -y + yc);
 	glEnd();
 }
-
+//////////////////////////////////////////////////////////////////////////
+//FUNCIONES DE FIGURAS 
+//////////////////////////////////////////////////////////////////////////
 void dibujarCirculo()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -337,7 +379,6 @@ void rellenoElipse()
 
 }
 
-
 void dibujarLineaBresenham()
 {
 	
@@ -435,7 +476,9 @@ void dibujarLineaBresenham()
 
 }
 
-
+//////////////////////////////////////////////////////////////////////////
+//FUNCIONES BASICAS PARA OPENGL
+//////////////////////////////////////////////////////////////////////////
 void ConfigureWindow(int newW, int newH)//Funcion de configuracion de la ventana de graficacion el puerto de vista
 
 {
@@ -445,7 +488,6 @@ void ConfigureWindow(int newW, int newH)//Funcion de configuracion de la ventana
 	glLoadIdentity();
 	gluOrtho2D(0, newW, newH, 0);
 }
-
 void OnResizeWindow(int width, int height)//Funcion cuando la ventana de la GUI cambia de tamaño
 {
 	ConfigureWindow(width, height);
@@ -453,7 +495,6 @@ void OnResizeWindow(int width, int height)//Funcion cuando la ventana de la GUI 
 	W = width;
 	H = height;
 }
-
 void OnRender(void) //funcion de graficacion
 {
 	glColor4f(1.0f, 0.0f, 0.0f, 0.0f);
@@ -464,7 +505,7 @@ void OnRender(void) //funcion de graficacion
 	{
 		mouse = MouseElipse;
 		
-		if (patron == true)
+		if (interruptor == true)
 		{
 			rellenoElipse();
 		}
@@ -482,7 +523,7 @@ void OnRender(void) //funcion de graficacion
 	else if (draw == DCircle)
 	{
 		mouse = MouseCircle;
-		if (patron == true)
+		if (interruptor == true)
 		{
 			RellenoCirculo();
 		}
@@ -496,6 +537,9 @@ void OnRender(void) //funcion de graficacion
 	glutSwapBuffers();
 }
 
+//////////////////////////////////////////////////////////////////////////
+//FUNCION PRINCIPAL
+//////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
