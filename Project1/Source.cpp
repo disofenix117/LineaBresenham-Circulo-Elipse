@@ -17,6 +17,7 @@ Universidad Militar Nueva Granada
 PARA DIBUJAR LINEA BRESENHAM SE USA LA TECLA "L".
 PARA DIBUJAR CIRCULO CON ANALISIS DE ORDEN 2 SE USA LA LETRA "C".
 PARA DIBUJAR UNA ELIPSE CON ANALISIS SE USA LA LETRA "E".
+PARA EL RELLENO DE LAS FIGURAS "R".
 */
 //variables globales
 int H, W;
@@ -114,13 +115,15 @@ void OnMouseMove(int x, int y)//funcion que captura el movimiento del mouse
 	glutPostRedisplay();
 }
 
-void DibujarLineaHorizontal(int Xi, int Xe, int Y)
+void DibujarLineaHorizontal(int Xi, int Xe, int Y)//ahi bien lo dice; dibuja una linea horizontal
 {
+	glBegin(GL_POINTS);
 	int x;
 	for (x = Xi; x <= Xe; x++)
 	{
 		glVertex2i(x, Y);
 	}
+	glEnd();
 }
 
 void simetriaCirculo(int xc, int yc, int x, int y)//simetria para dibujar el resto de los octantes
@@ -148,6 +151,7 @@ void simetriaElipse(int xc, int yc, int x, int y)//simetria para dibujar el rest
 
 void rellenoSimetriaCirculo(int x, int y, int xc, int yc)
 {
+	glBegin(GL_POINTS);
 		DibujarLineaHorizontal(-x + xc, x + xc, y + yc);
 		DibujarLineaHorizontal(-x + xc, x + xc, -y + yc);
 		DibujarLineaHorizontal(-y + xc, y + xc, x + yc);
@@ -155,48 +159,12 @@ void rellenoSimetriaCirculo(int x, int y, int xc, int yc)
 
 	glEnd();
 }
-
-void RellenoCirculo()
+void rellenoSimetriaElipse(int x, int y, int xc, int yc)
 {
-	int xc = Xo, yc = Yo;
-	int x, y;
-	y = R;
-	x = 0;
-	int D = (5 / 4) - R;
-	int inc1 = 5 - 2 * R, inc2 = 3;
-	DibujarLineaHorizontal(-R + xc, R + xc, yc); //linea del centro del circulo
 	glBegin(GL_POINTS);
-
-	while (x <= y)
-	{
-		if (D < 0)
-		{
-			x = x + 1;
-			y = y;
-			D = D + inc2;
-			inc1 = inc1 + 2;
-			inc2 = inc2 + 2;
-		}
-		else
-		{
-			x = x + 1;
-			y = y - 1;
-			D = D + inc1;
-			inc1 = inc1 + 4;
-			inc2 = inc2 + 2;
-		}
-		//relleno del circulo por simetria (la funcion no quiere servir)
-		/*
-		DibujarLineaHorizontal(-x + xc, x + xc, y + yc);
-		DibujarLineaHorizontal(-x + xc, x + xc, -y + yc);
-		DibujarLineaHorizontal(-y + xc, y + xc, x + yc);
-		DibujarLineaHorizontal(-y + xc, y + xc, -x + yc);
-		*/
-	}
-	DibujarLineaHorizontal(-R + xc, R + xc, yc);
-
+	DibujarLineaHorizontal(-x + xc, x + xc, y + yc);
+	DibujarLineaHorizontal(-x + xc,x + xc, -y + yc);
 	glEnd();
-
 }
 
 void dibujarCirculo()
@@ -225,10 +193,46 @@ void dibujarCirculo()
 			inc1 = inc1 + 2;
 			inc2 = inc2 + 2;
 		}
-		
+
 		simetriaCirculo(xc, yc, x, y);
 	}
-	
+
+}
+void RellenoCirculo()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+	int xc = Xo, yc = Yo;
+	int x, y;
+	y = R;
+	x = 0;
+	int D = (5 / 4) - R;
+	int inc1 = 5 - 2 * R, inc2 = 3;
+	DibujarLineaHorizontal(-R + xc, R + xc, yc); //linea del centro del circulo
+	glBegin(GL_POINTS);
+
+	while (x <= y)
+	{
+		if (D < 0)
+		{
+			x = x + 1;
+			y = y;
+			D = D + inc2;
+			inc1 = inc1 + 2;
+			inc2 = inc2 + 2;
+		}
+		else
+		{
+			x = x + 1;
+			y = y - 1;
+			D = D + inc1;
+			inc1 = inc1 + 4;
+			inc2 = inc2 + 2;
+		}
+		rellenoSimetriaCirculo(x, y, xc, yc);
+	}
+	glEnd();
+
 }
 void dibujarElipse() 
 {
@@ -282,6 +286,58 @@ void dibujarElipse()
 	glFlush();
 
 }
+void rellenoElipse()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+	int xc = Xo, yc = Yo, rx = Xf, ry = Yf;
+	int x = 0, y = ry;
+	if (rx == 0 || ry == 0)
+	{
+		return;
+	}
+	int rx2 = rx * rx, ry2 = ry * ry;
+	int DosRx2 = 2 * rx2, Dosry2 = 2 * ry2;
+	float p1 = ry2 - (rx2*ry) + ((1 / 4)*rx2);
+	float p2 = (ry2*(x + 1 / 2)*(x + 1 / 2)) + (rx2*(y - 1)*(y - 1)) - rx2 * ry2;
+	int px = 0, py = DosRx2 * y;
+	while (2 * ry2*x <= 2 * rx2*y)
+	{
+
+		x++;
+		if (p1 < 0)
+		{
+			p1 += (2 * x*ry2) + ry2;
+		}
+		else
+		{
+			y--;
+			p1 += (2 * ry2*x) - (2 * rx2*y) + ry2;
+
+		}
+		rellenoSimetriaElipse(x, y, xc, yc);
+	}
+	simetriaElipse(xc, yc, x, y);
+	while (y > 0)
+	{
+
+		y--;
+		if (p2 > 0)
+		{
+			p2 += rx2 - (2 * rx2*y);
+		}
+		else
+		{
+			x++;
+			p2 += (2 * ry2*x) - (2 * rx2*y) + rx2;
+		}
+		rellenoSimetriaElipse(x, y, xc, yc);
+	}
+	glFlush();
+
+}
+
+
 void dibujarLineaBresenham()
 {
 	
@@ -407,7 +463,15 @@ void OnRender(void) //funcion de graficacion
 	if (draw == DElipse)
 	{
 		mouse = MouseElipse;
-		dibujarElipse();
+		
+		if (patron == true)
+		{
+			rellenoElipse();
+		}
+		else
+		{
+			dibujarElipse();
+		}
 	}
 	
 	else if (draw ==DLine)
@@ -418,7 +482,6 @@ void OnRender(void) //funcion de graficacion
 	else if (draw == DCircle)
 	{
 		mouse = MouseCircle;
-		dibujarCirculo();
 		if (patron == true)
 		{
 			RellenoCirculo();
