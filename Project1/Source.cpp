@@ -186,10 +186,12 @@ void RellenoCirculo()
 			inc2 = inc2 + 2;
 		}
 		//relleno del circulo por simetria (la funcion no quiere servir)
+		/*
 		DibujarLineaHorizontal(-x + xc, x + xc, y + yc);
 		DibujarLineaHorizontal(-x + xc, x + xc, -y + yc);
 		DibujarLineaHorizontal(-y + xc, y + xc, x + yc);
 		DibujarLineaHorizontal(-y + xc, y + xc, -x + yc);
+		*/
 	}
 	DibujarLineaHorizontal(-R + xc, R + xc, yc);
 
