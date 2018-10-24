@@ -17,7 +17,7 @@ Universidad Militar Nueva Granada
 PARA DIBUJAR LINEA BRESENHAM SE USA LA TECLA "L".
 PARA DIBUJAR CIRCULO CON ANALISIS DE ORDEN 2 SE USA LA LETRA "C".
 PARA DIBUJAR UNA ELIPSE CON ANALISIS SE USA LA LETRA "E".
-PARA EL RELLENO DE LAS FIGURAS "R".
+PARA EL RELLENO DE LAS FIGURAS SE USA LA LETRA "R".
 */
 //variables globales
 int H, W;
@@ -43,6 +43,7 @@ enum Mouse//funciones de tipos de variables para el mouse
 	MouseCircle,
 	MouseLine,
 };
+
 DrawTipe draw; //variable que define el tipo de dibujo a realizar
 Mouse mouse;//variable que define el tipo de mouse a usar
 
@@ -159,7 +160,6 @@ void DibujarLineaHorizontal(int Xi, int Xe, int Y)//ahi bien lo dice; dibuja una
 	{
 		glVertex2i(x, Y);
 	}
-	glEnd();
 }
 //////////////////////////////////////////////////////////////////////////
 //SIMETRIAS
@@ -211,7 +211,6 @@ void rellenoSimetriaElipse(int x, int y, int xc, int yc)
 //////////////////////////////////////////////////////////////////////////
 void dibujarCirculo()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
 	glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 	int xc = Xo, yc = Yo;
 	int x = 0, y = R;
@@ -242,7 +241,6 @@ void dibujarCirculo()
 }
 void RellenoCirculo()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
 	glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 	int xc = Xo, yc = Yo;
 	int x, y;
@@ -273,13 +271,11 @@ void RellenoCirculo()
 		}
 		rellenoSimetriaCirculo(x, y, xc, yc);
 	}
-	glEnd();
 
 }
+
 void dibujarElipse() 
 {
-	
-	glClear(GL_COLOR_BUFFER_BIT);
 	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
 	int xc = Xo, yc = Yo, rx = Xf, ry = Yf;
 	int x = 0, y = ry;
@@ -325,12 +321,10 @@ void dibujarElipse()
 		simetriaElipse(xc, yc, x, y);
 
 	}
-	glFlush();
 
 }
 void rellenoElipse()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
 	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
 	int xc = Xo, yc = Yo, rx = Xf, ry = Yf;
 	int x = 0, y = ry;
@@ -375,25 +369,25 @@ void rellenoElipse()
 		}
 		rellenoSimetriaElipse(x, y, xc, yc);
 	}
-	glFlush();
 
 }
 
 void dibujarLineaBresenham()
 {
-	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 	glBegin(GL_POINTS);
-	/*Recta forma cartesiana y=mx+b
+	/*
+	Recta forma cartesiana y=mx+b
 	m=dy/dx
 	Recta forma general f(x,y)=Ax+By+C=0
-	donde m= -A/B   y  b= -C/B*/
+	donde m= -A/B   y  b= -C/B 
+	*/
 	int dx, dy, dE, dNE, De, Dne, d, D, x, y, f, mv;
-	dx = abs(Xf - Xo);
-	dy = abs(Yf - Yo);
+	dx = fabs(Xf - Xo);
+	dy = fabs(Yf - Yo);
 	//Si (dx > dy) entonces se toma que el negativo será B en lugar de A por ende A= dy, B= -dx y C= -bdx
 	//Si (dx < dy) entonces se toma que el negativo será A en lugar de B por ende A= -dy, B= dx y C= bdx
 	d = 2 * dy - dx; // Es el dk cuando (dx > dy) = (dy -1/2 dx) se multiplicó x2 para quitar los racionales.
@@ -405,7 +399,7 @@ void dibujarLineaBresenham()
 	x = Xo;
 	y = Yo;
 	mv = 1; // Dependiendo del octante en que se encuentre indica si la variable que lleva el punto medio aumenta o disminuye.
-	if (dx > dy) // Se ubica desde (pi/4 , 7pi/4) u (3pi/4 , 5pi/4 )
+	if (dx > dy) // Se ubica desde (pi/4 , 7pi/4)
 	{  
 		if (Xo > Xf)
 		{
@@ -437,7 +431,7 @@ void dibujarLineaBresenham()
 			glVertex2i(x, y);
 		}
 	}
-	else
+	else // se ubica desde  u (3pi/4 , 5pi/4 )
 	{
 		if (Yo > Yf)
 		{
